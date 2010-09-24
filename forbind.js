@@ -1,9 +1,11 @@
 /**
  * @license Förbind v0.1 - Built with build.js
-*
-* Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
-*
-*//*
+ *
+ *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
+ *
+ */
+
+/*
     http://www.JSON.org/json2.js
     2010-08-25
 

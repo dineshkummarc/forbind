@@ -18,7 +18,7 @@ var fs = require('fs'),
 		'vendor/socket.io/socket.io.js',
 		'forbind.js'
 	],	
-	content = "/**\n * @license Förbind v" + forbind.version + " - Built with build.js\n*\n* Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.\n*\n*/",
+	content = "/**\n * @license Förbind v" + forbind.version + " - Built with build.js\n *\n *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.\n *\n */\n\n",
 	out = __dirname + '/../forbind',
 	spawn = require('child_process').spawn,
 	compile = spawn('java', ('-jar ' + __dirname + '/../lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --warning_level=QUIET --charset=UTF-8 --js=' + out + '.js --js_output_file=' + out + '.min.js').split(/ /)),
