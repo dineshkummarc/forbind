@@ -2420,7 +2420,7 @@ ASProxy.prototype =
 
 (function (host, port, undefined) {
 
-io.setPath('http://' + host + ':' + port + '/socket.io/');
+WEB_SOCKET_SWF_LOCATION = 'http://' + host + ':' + port + '/socket.io/';
 
 function each(obj, fn, context) {
   for (var key in obj) {

@@ -46,7 +46,7 @@ compile.on('exit', function () {
   // manually cleaning up the comments, Socket.io's license is repeated a number of times,
   // so I'm going to remove the dupes and add some more detail
   var content = fs.readFileSync(out + '.min.js') + '';
-  console.log(content.length);
+
   content = content.replace(/(The MIT license.\s*@copyright Copyright \(c\) 2010 LearnBoost <dev@learnboost.com>\s*)+/mg, socketiolicense);
 
   fs.write(fs.openSync(out + '.min.js', 'w'), content, 0, 'utf8');
