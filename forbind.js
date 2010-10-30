@@ -1,5 +1,6 @@
 /**
- * @license Förbind v0.1 - Built with build.js
+ * @license Förbind v0.1
+ * @updated Sat Oct 30 2010 22:28:57 GMT+0100 (BST)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2432,6 +2433,11 @@ function each(obj, fn, context) {
 function trigger() {
   var args = [].slice.apply(arguments),
       event = args.shift();
+
+  if (forbind.debug) {
+    console.log(event + ', event:' + JSON.stringify(args[0]));
+  }
+
   if (eventRegister[event] !== undefined) {
     each(eventRegister[event], function (fn) {
       fn.apply(forbind, args);
@@ -2448,21 +2454,20 @@ function ifconnected(fn) {
 }
 
 function messageHandler(msg) {
-  // app:* messages are internal to förbind
-  if (forbind.debug) {
-    console.log('message in: ' + JSON.stringify(msg));
+  if (msg.data === undefined) {
+    msg.data = {};
   }
+
+  msg.data.type = msg.type.substr(msg.type.indexOf(':')+1); // include the event type
   
+  // app:* messages are internal to förbind
   if (msg.type && msg.type.substr(0, 4) === 'app:') {
-    if (msg.type === 'app:message') {
-      // a message event has slightly special handling:
-      // the response is passed in as the first arg
-      trigger(msg.type, msg.data.data, msg.data); 
-    } else {
-      trigger(msg.type, msg.data);      
-    }
+    trigger(msg.type, msg.data);
+  // user:* messages get passed directly to förbind event system
+  } else if (msg.type && msg.type.substr(0, 5) === 'user:') {
+    trigger(msg.data.type, msg.data);
   } else {
-    console.log('unknown message: (type:' + msg.type + ') ' + JSON.stringify(msg));
+    console && console.log('unknown message: (type:' + msg.type + ') ' + JSON.stringify(msg));
   }
 }
 
@@ -2514,13 +2519,7 @@ var forbind = {
       this.bind('app:load', function (_config) {
         config = _config;
         if (callback !== undefined) callback.call(forbind, config);
-        trigger('connect', config);
-      }).bind('app:waiting', function (sessionStats) {
-        trigger('waiting', sessionStats);
-      }).bind('app:create', function (sessionId) {
-        trigger('create', sessionId);
-      }).bind('app:leave', function () {
-        trigger('leave');
+        trigger('connect', { config: config, type: 'connect' });
       });
       
       // let's go
@@ -2532,18 +2531,27 @@ var forbind = {
   },
   bind: function (event, fn) {
     // do I need to support space separated event binding
-    if (/ /.test(event)) {
-      each(event.split(' '), function (event) {
-        forbind.bind(event, fn);
-      });
-    } else {
-      if (eventRegister[event] === undefined) {
-        eventRegister[event] = [fn];
+    if (typeof event === 'string') {
+      if (/ /.test(event)) {
+        each(event.split(' '), function (event) {
+          forbind.bind(event, fn);
+        });
       } else {
-        eventRegister[event].push(fn);
+        if (eventRegister[event] === undefined) {
+          eventRegister[event] = [fn];
+        } else {
+          eventRegister[event].push(fn);
+        }        
+      }
+    } else { // object
+      for (var key in event) {
+        this.bind(key, event[key]);
       }      
     }
     return this;
+  },
+  on: function (event, fn) {
+    return this.bind(event, fn);
   },
   unbind: function (event, fn) {
     if (fn === undefined) {
@@ -2560,22 +2568,6 @@ var forbind = {
   join: function (key) {
     // try to add the current user to session - may fail
     ifconnected(function () {
-      this.unbind('app:join').bind('app:join', function () {
-        // main forbind message handler - should be moved up and out
-        this.unbind('app:message').bind('app:message', function (data) {
-          trigger('message', data);
-        });
-        
-        // notify of other users connecting and disconnecting
-        this.unbind('app:connection').bind('app:connection', function (data) {
-          trigger('connection', data);
-        }).unbind('app:disconnection').bind('app:disconnection', function (data) {
-          trigger('disconnection', data);
-        });
-
-        trigger('join');
-      });
-      
       socket.send({
         method: 'app:join',
         data: {
@@ -2609,12 +2601,11 @@ var forbind = {
   },
   send: function (message) {
     ifconnected(function () {
-      if (user) {
-        socket.send({
-          method: 'user:message',
-          data: message
-        });
-      }
+      socket.send({
+        method: 'user:message',
+        data: message,
+        user: user
+      });
     });
   },
   user: function (details) {
@@ -2623,7 +2614,6 @@ var forbind = {
 };
 
 forbind.bind('app:error', function (data) {
-  // console.log('error', data);
   // if there's a custom error handler - defer to that, otherwise throw a new error
   if (eventRegister.error !== undefined) {
     trigger('error', data);
