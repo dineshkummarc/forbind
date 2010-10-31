@@ -1,6 +1,6 @@
 /**
  * @license Förbind v0.1
- * @updated Sat Oct 30 2010 22:28:57 GMT+0100 (BST)
+ * @updated Sun Oct 31 2010 22:57:10 GMT+0000 (GMT)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2435,7 +2435,7 @@ function trigger() {
       event = args.shift();
 
   if (forbind.debug) {
-    console.log(event + ', event:' + JSON.stringify(args[0]));
+    console.log(event + ', callbacks:' + (eventRegister[event] === undefined ? 0 : eventRegister[event].length) + ', event:' + JSON.stringify(args[0]));
   }
 
   if (eventRegister[event] !== undefined) {
@@ -2457,7 +2457,7 @@ function messageHandler(msg) {
   if (msg.data === undefined) {
     msg.data = {};
   }
-
+  
   msg.data.type = msg.type.substr(msg.type.indexOf(':')+1); // include the event type
   
   // app:* messages are internal to förbind
@@ -2472,13 +2472,15 @@ function messageHandler(msg) {
 }
 
 var user = { // FIXME is this *really* required?
-      details: {},
-      id: +new Date
+      id: +new Date,
+      details: {}
     },
     config = {},
     eventRegister = {},
     connected = false,
     socket = new io.Socket(host, { port: port });
+
+user.details._id = user.id;
 
 var forbind = {
   version: '0.1',
@@ -2506,7 +2508,7 @@ var forbind = {
       
       socket.on('disconnect', function () {
         connected = false;
-        trigger('disconnect');
+        trigger('disconnect', {});
       });
 
       socket.on('message', messageHandler);
@@ -2610,6 +2612,8 @@ var forbind = {
   },
   user: function (details) {
     user.details = details;
+    // remap the id on to the details
+    user.details._id = user.id;
   }
 };
 
