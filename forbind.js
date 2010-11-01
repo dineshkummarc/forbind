@@ -1,6 +1,6 @@
 /**
  * @license Förbind v0.1
- * @updated Sun Oct 31 2010 22:57:10 GMT+0000 (GMT)
+ * @updated Mon Nov 01 2010 01:08:42 GMT+0000 (GMT)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2471,16 +2471,11 @@ function messageHandler(msg) {
   }
 }
 
-var user = { // FIXME is this *really* required?
-      id: +new Date,
-      details: {}
-    },
+var user = {},
     config = {},
     eventRegister = {},
     connected = false,
     socket = new io.Socket(host, { port: port });
-
-user.details._id = user.id;
 
 var forbind = {
   version: '0.1',
@@ -2611,9 +2606,7 @@ var forbind = {
     });
   },
   user: function (details) {
-    user.details = details;
-    // remap the id on to the details
-    user.details._id = user.id;
+    user = details;
   }
 };
 
