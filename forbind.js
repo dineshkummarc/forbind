@@ -1,6 +1,6 @@
 /**
  * @license Förbind v0.1
- * @updated Mon Nov 01 2010 01:08:42 GMT+0000 (GMT)
+ * @updated Mon Nov 01 2010 12:28:20 GMT+0000 (GMT)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2421,7 +2421,7 @@ ASProxy.prototype =
 
 (function (host, port, undefined) {
 
-WEB_SOCKET_SWF_LOCATION = 'http://' + host + ':' + port + '/socket.io/';
+WEB_SOCKET_SWF_LOCATION = 'http://' + host + ':' + port + '/flash/WebSocketMainInsecure.swf';
 
 function each(obj, fn, context) {
   for (var key in obj) {
@@ -2622,7 +2622,8 @@ forbind.bind('app:error', function (data) {
 // try to read the api key from the script tag
 var lastChild;
 if (typeof this.document !== 'undefined' && document.body) {
-  lastChild = document.body.lastChild;
+  var scripts = document.getElementsByTagName('script');
+  lastChild = scripts[scripts.length-1];
   
   if (lastChild.nodeName === 'SCRIPT') {
     lastChild.getAttribute('src').replace(/apikey=(.+?)\b/, function (n, apikey) {
