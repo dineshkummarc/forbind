@@ -1,6 +1,6 @@
 /**
  * @license Förbind v0.1
- * @updated Mon Nov 01 2010 12:28:20 GMT+0000 (GMT)
+ * @updated Wed Nov 10 2010 12:33:09 GMT+0000 (GMT)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2621,7 +2621,7 @@ forbind.bind('app:error', function (data) {
 
 // try to read the api key from the script tag
 var lastChild;
-if (typeof this.document !== 'undefined' && document.body) {
+if (typeof this.document !== 'undefined') {
   var scripts = document.getElementsByTagName('script');
   lastChild = scripts[scripts.length-1];
   
