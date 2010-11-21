@@ -1,6 +1,6 @@
 /**
  * @license Förbind v0.1
- * @updated Fri Nov 19 2010 20:58:03 GMT+0000 (GMT)
+ * @updated Sun Nov 21 2010 02:30:33 GMT+0000 (GMT)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2601,6 +2601,13 @@ var forbind = {
       forbind.unbind('app:users').on('app:users', callback);
       socket.send({
         method: 'app:users'
+      });
+    });
+  },
+  pass: function () {
+    ifconnected(function () {
+      socket.send({
+        method: 'user:pass'
       });
     });
   },
