@@ -1,6 +1,6 @@
 /**
  * @license Förbind v0.1
- * @updated Sun Nov 21 2010 02:30:33 GMT+0000 (GMT)
+ * @updated Mon Nov 22 2010 13:34:38 GMT+0000 (GMT)
  *
  *  Compiled with JSON and Socket.io - see http://github.com/remy/forbind for details.
  *
@@ -2562,14 +2562,15 @@ var forbind = {
     }
     return this;
   },
-  join: function (key) {
+  join: function (key, readonlykey) {
     // try to add the current user to session - may fail
     ifconnected(function () {
       socket.send({
         method: 'app:join',
         data: {
           user: user,
-          key: key
+          key: key,
+          readonlykey: readonlykey
         }
       });
     });
